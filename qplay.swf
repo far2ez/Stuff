@@ -18,7 +18,7 @@ package com.hurlant.crypto.symmetric {
 
         function _pl701():uint;
         function _op40(_arg1:ByteArray):void;
-        function _gj66(_arg1:ByteArray):void;
+        function unpack(_arg1:ByteArray):void;
         function dispose():void;
         function toString():String;
 
@@ -31,7 +31,7 @@ package com.hurlant.crypto.symmetric {
 
         function _pl701():uint;
         function _op40(_arg1:ByteArray, _arg2:uint=0):void;
-        function _gj66(_arg1:ByteArray, _arg2:uint=0):void;
+        function unpack(_arg1:ByteArray, _arg2:uint=0):void;
         function dispose():void;
         function toString():String;
 
@@ -143,7 +143,7 @@ package com.hurlant.crypto.symmetric {
             _arg1.position = _arg2;
             _arg1.writeBytes(this.state);
         }
-        public function _gj66(_arg1:ByteArray, _arg2:uint=0):void{
+        public function unpack(_arg1:ByteArray, _arg2:uint=0):void{
             var _local3:uint;
             this.state.position = 0;
             this.state.writeBytes(_arg1, _arg2, (_hp900 * 4));
@@ -375,7 +375,7 @@ package com.hurlant.crypto.symmetric {
                 _arg1[_local3] = (_arg1[_local3] ^ this.next());
             };
         }
-        public function _gj66(_arg1:ByteArray):void{
+        public function unpack(_arg1:ByteArray):void{
             this._op40(_arg1);
         }
         public function dispose():void{
@@ -1203,7 +1203,7 @@ package {
         public var _bm539:Class;
         public var _lk737:Class;
         public var _om1035:Class;
-        private var _pi432:Loader = null;
+        private var gameLoader:Loader = null;
         private var _is504:Sprite = null;
         private var _ph81:Bitmap = null;
         private var _tk866:Bitmap = null;
@@ -1214,7 +1214,7 @@ package {
         private var _bp87:SoundChannel = null;
         private var passkey:String;
         private var cryptoString:encryptedString = null;
-        private var _ut1043:int = 0;
+        private var iterating:int = 0;
         private var timeout:Timer = null;
         private var _it380:TextField = null;
 
@@ -1230,8 +1230,8 @@ package {
             this._om1035 = _fy138__om1035;
             this.passkey = “72b0gr3KwfzDjEzT”;
             super();
-            this._pi432 = new Loader();
-            addChild(this._pi432);
+            this.gameLoader = new Loader();
+            addChild(this.gameLoader);
             this._ph81 = new this._ih418();
             this._ph81.x = 0;
             this._ph81.y = 0;
@@ -1331,7 +1331,7 @@ package {
             navigateToURL(new URLRequest(irrcrpt("jvvr://yyy.hcegdqqm.eqo/itccnqpnkpgencuuke", 2)), irrcrpt("_cmbol", 1));
         }
         public function _ya345(_arg1:ContextMenuEvent):void{
-            var _local2:Sprite = (this._pi432.content as Sprite);
+            var _local2:Sprite = (this.gameLoader.content as Sprite);
             if (_local2){
                 _local2.dispatchEvent(new Event(irrcrpt("poQmbzfsQspgjmfDmjdl3", 1), true));
             };
@@ -1345,7 +1345,7 @@ package {
             };
             stage.removeEventListener(Event.ENTER_FRAME, this.retrieveBinary);
             stage.frameRate = 20;
-            this.printToScreen(irrcrpt("Vwduw ordglqj...", 3));
+            this.printToScreen(“Start loading...”);
             this.preloader = new URLLoader();
             var _local2:URLRequest = new URLRequest(root.loaderInfo.parameters.gamefile);
             this.preloader.addEventListener(ProgressEvent.PROGRESS, this.loadGame);
@@ -1362,7 +1362,7 @@ package {
             this._bc834((2 + _local2));
         }
 
-// This seems to be what I want #3 - this occurs when he game is LOADED - some kind of key or something is unobfuscated
+// Here is #3. The game data is finished loading and generates a passkey that is later used to de-obfuscate the game data
         private function gameLoaded(_arg1:Event):void{
             this.printToScreen(“Loading done.”);
 		// What’s this do? Not sure
@@ -1372,50 +1372,50 @@ package {
             _local2.writeUTF(this.passkey);
 
             this.cryptoString = new encryptedString(_local2);
-            this._ut1043 = 0;
+            this.iterating = 0;
             this.timeout = new Timer(10, 0);
             this.timeout.addEventListener(TimerEvent.TIMER, this.unpackGame);
             this.timeout.start();
             this.printToScreen("Start unpacking...");
         }
 
-// This is #4 - the game had 10 seconds to "unpack" - wtf does that mean?
+// This is #4. The game is de-obfuscated here.
         private function unpackGame(_arg1:TimerEvent):void{
-            var _local2 = (this.preloader.data.length & ~(15));
-            var _local3:int;
-            while ((((_local3 < 10000)) && ((this._ut1043 < _local2)))) {
-                this.cryptoString._gj66(this.preloader.data, this._ut1043);
-                _local3++;
-                this._ut1043 = (this._ut1043 + 16);
+            var localMax = (this.preloader.data.length & ~(15));
+            var i:int;
+            while ((((i < 10000)) && ((this.iterating < localMax)))) {
+                this.cryptoString.unpack(this.preloader.data, this.iterating);
+                i++;
+                this.iterating = (this.iterating + 16);
             };
-            this.printToScreen((irrcrpt("Voqbdlfe: ", 1) + ((100 * this._ut1043) / _local2)));
-            if (this._ut1043 < _local2){
+            this.printToScreen((“Unpacked: “ + ((100 * this.iterating) / localMax)));
+            if (this.iterating < localMax){
                 return;
             };
-            this.printToScreen(irrcrpt("Voqbdljoh epof.", 1));
+            this.printToScreen(“Unpacking done.”);
             this.timeout.stop();
-            this._fv106();
+            this.runGame();
         }
-        private function _fv106():void{
-            this.printToScreen(irrcrpt("Wzssnsl lfrj...", 5));
+        private function runGame():void{
+            this.printToScreen(“Running game...”);
             var _local1:LoaderContext = new LoaderContext(false, ApplicationDomain.currentDomain);
-            this._pi432.contentLoaderInfo.parameters.qplaycookie = root.loaderInfo.parameters.qplaycookie;
-            this._pi432.contentLoaderInfo.parameters.parent = this;
-            this._pi432.contentLoaderInfo.addEventListener(Event.COMPLETE, this._gu960);
-            this._pi432.contentLoaderInfo.addEventListener(irrcrpt("vhfxulwbHuuru", 3), this.onSecurityError);
-            this._pi432.loadBytes(this.preloader.data, _local1);
+            this.gameLoader.contentLoaderInfo.parameters.qplaycookie = root.loaderInfo.parameters.qplaycookie;
+            this.gameLoader.contentLoaderInfo.parameters.parent = this;
+            this.gameLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, this.startGame);
+            this.gameLoader.contentLoaderInfo.addEventListener(“securityError”, this.onSecurityError);
+            this.gameLoader.loadBytes(this.preloader.data, _local1);
         }
         private function onSecurityError(_arg1:Event):void{
-            this.printToScreen(irrcrpt("Xjhzwnyd jwwtw bmjs qtfinsl lfrj.", 5));
+            this.printToScreen(“Security error when loading game.”);
         }
-        private function _gu960(_arg1:Event):void{
-            this.printToScreen(irrcrpt("Hbnf tubsufe.", 1));
+        private function startGame(_arg1:Event):void{
+            this.printToScreen(“Game started.”);
             var _local2:LoaderInfo = (_arg1.target as LoaderInfo);
             var _local3:Sprite = (_local2.loader.content as Sprite);
-            _local3.addEventListener(irrcrpt("mnijQtfinslXhwjjs", 5), this._nn404);
+            _local3.addEventListener(“hideLoadingScreen”, this._nn404);
         }
         public function _nn404(_arg1:Event):void{
-            this.printToScreen(irrcrpt("Tdsjqut mpbefe.", 1));
+            this.printToScreen(“Scripts loaded.”);
             if (this._it380){
                 removeChild(this._it380);
             };
