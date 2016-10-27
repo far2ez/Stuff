@@ -311,7 +311,7 @@ package com.hurlant.crypto.symmetric {
         };
     }
 }//package com.hurlant.crypto.symmetric 
-?package com.hurlant.crypto.prng {
+package com.hurlant.crypto.prng {
     import flash.utils.*;
     import com.hurlant.crypto.symmetric.*;
     import com.hurlant.util.*;
@@ -1228,7 +1228,7 @@ package {
             this._bm539 = _fy138__bm539;
             this._lk737 = _fy138__lk737;
             this._om1035 = _fy138__om1035;
-            this.passkey = “72b0gr3KwfzDjEzT”;
+            this.passkey = "72b0gr3KwfzDjEzT";
             super();
             this.gameLoader = new Loader();
             addChild(this.gameLoader);
@@ -1345,7 +1345,7 @@ package {
             };
             stage.removeEventListener(Event.ENTER_FRAME, this.retrieveBinary);
             stage.frameRate = 20;
-            this.printToScreen(“Start loading...”);
+            this.printToScreen("Start loading...");
             this.preloader = new URLLoader();
             var _local2:URLRequest = new URLRequest(root.loaderInfo.parameters.gamefile);
             this.preloader.addEventListener(ProgressEvent.PROGRESS, this.loadGame);
@@ -1356,7 +1356,7 @@ package {
 
 // Loading function
         private function loadGame(_arg1:ProgressEvent):void{
-            this.printToScreen((“Loading: ” + ((100 * _arg1.bytesLoaded) / _arg1.bytesTotal)));
+            this.printToScreen(("Loading: " + ((100 * _arg1.bytesLoaded) / _arg1.bytesTotal)));
             var _local2:int = ((_arg1.bytesLoaded / _arg1.bytesTotal) * 4);
 		// What’s this do? Dunno
             this._bc834((2 + _local2));
@@ -1364,7 +1364,7 @@ package {
 
 // Here is #3. The game data is finished loading and generates a passkey that is later used to de-obfuscate the game data
         private function gameLoaded(_arg1:Event):void{
-            this.printToScreen(“Loading done.”);
+            this.printToScreen("Loading done.");
 		// What’s this do? Not sure
             this._bc834(6);
 
@@ -1388,34 +1388,34 @@ package {
                 i++;
                 this.iterating = (this.iterating + 16);
             };
-            this.printToScreen((“Unpacked: “ + ((100 * this.iterating) / localMax)));
+            this.printToScreen(("Unpacked: " + ((100 * this.iterating) / localMax)));
             if (this.iterating < localMax){
                 return;
             };
-            this.printToScreen(“Unpacking done.”);
+            this.printToScreen("Unpacking done.");
             this.timeout.stop();
             this.runGame();
         }
         private function runGame():void{
-            this.printToScreen(“Running game...”);
+            this.printToScreen("Running game...");
             var _local1:LoaderContext = new LoaderContext(false, ApplicationDomain.currentDomain);
             this.gameLoader.contentLoaderInfo.parameters.qplaycookie = root.loaderInfo.parameters.qplaycookie;
             this.gameLoader.contentLoaderInfo.parameters.parent = this;
             this.gameLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, this.startGame);
-            this.gameLoader.contentLoaderInfo.addEventListener(“securityError”, this.onSecurityError);
+            this.gameLoader.contentLoaderInfo.addEventListener("securityError", this.onSecurityError);
             this.gameLoader.loadBytes(this.preloader.data, _local1);
         }
         private function onSecurityError(_arg1:Event):void{
-            this.printToScreen(“Security error when loading game.”);
+            this.printToScreen("Security error when loading game.");
         }
         private function startGame(_arg1:Event):void{
-            this.printToScreen(“Game started.”);
+            this.printToScreen("Game started.");
             var _local2:LoaderInfo = (_arg1.target as LoaderInfo);
             var _local3:Sprite = (_local2.loader.content as Sprite);
-            _local3.addEventListener(“hideLoadingScreen”, this._nn404);
+            _local3.addEventListener("hideLoadingScreen", this._nn404);
         }
         public function _nn404(_arg1:Event):void{
-            this.printToScreen(“Scripts loaded.”);
+            this.printToScreen("Scripts loaded.");
             if (this._it380){
                 removeChild(this._it380);
             };
